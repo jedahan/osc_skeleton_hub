@@ -25,7 +25,7 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
-    void sendHeartbeat();
+    void sendPulse();
     void registerClient(ofxOscMessage *m);
     
     ofxOscReceiver oscReceiver;

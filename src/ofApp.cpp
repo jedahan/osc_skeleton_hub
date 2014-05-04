@@ -3,10 +3,19 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     oscReceiver.setup(PORT);
+    
+    lastPulseTime = 0;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    
+    int time = ofGetElapsedTimeMillis();
+    
+    if (time - lastPulseTime > PULSE_INTERVAL) {
+        lastPulseTime = time;
+        sendPulse();
+    }
     
     while(oscReceiver.hasWaitingMessages()){
 		// get the next message
@@ -26,7 +35,7 @@ void ofApp::registerClient(ofxOscMessage *m) {
     // many cases.
     string clientIp = m->getRemoteIp();
     
-    cout << "received heartbeat from " << clientIp << endl;
+    cout << "received call home from " << clientIp << endl;
     
     // Check to see if this IP already is registered as a client
     map<string, oscClient>::iterator it = clients.find(clientIp);
@@ -44,8 +53,8 @@ void ofApp::registerClient(ofxOscMessage *m) {
 /**
  * Send a heartbeat pulse to all registered clients.
  */
-void ofApp::sendHeartbeat() {
-    cout << "sending heartbeat to IPs:" << endl;
+void ofApp::sendPulse() {
+    cout << "sending pulse to IPs:" << endl;
     
     // first, we add all of registered client IPs to the message
     ofxOscMessage m;
@@ -67,12 +76,7 @@ void ofApp::sendHeartbeat() {
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    int time = ofGetElapsedTimeMillis();
     
-    if (time - lastPulseTime > PULSE_INTERVAL) {
-        lastPulseTime = time;
-        sendHeartbeat();
-    }
 }
 
 //--------------------------------------------------------------
