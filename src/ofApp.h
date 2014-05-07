@@ -2,7 +2,6 @@
 
 #include "ofMain.h"
 #include "ofxOsc.h"
-#include "oscClient.h"
 
 #define HUB_IP "127.0.0.1"
 #define PORT 8000
@@ -31,8 +30,7 @@ public:
     ofxOscReceiver oscReceiver;
     ofxOscSender oscSender;
     
-    set<string> clientIps;
-    map<string, oscClient> clients;
+    map<string, ofxOscSender> clients;
     int lastPulseTime;
-		
+
 };

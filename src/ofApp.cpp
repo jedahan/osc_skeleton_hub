@@ -38,14 +38,14 @@ void ofApp::registerClient(ofxOscMessage *m) {
     cout << "received call home from " << clientIp << endl;
     
     // Check to see if this IP already is registered as a client
-    map<string, oscClient>::iterator it = clients.find(clientIp);
-    oscClient cl;
+    map<string, ofxOscSender>::const_iterator it = clients.find(clientIp);
+
     if(it == clients.end()) {
         // no client found for this IP, add it to the map of clients.
         cout << "registering new client" << endl;
-        clientIps.insert(clientIp);
-        ofxOscSender & _sender = clients[clientIp].sender;
+        ofxOscSender _sender;
         _sender.setup(clientIp, PORT);
+        clients[clientIp] = _sender;
     }
 
 }
@@ -59,17 +59,19 @@ void ofApp::sendPulse() {
     // first, we add all of registered client IPs to the message
     ofxOscMessage m;
     m.setAddress("/pulse");
-    for (set<string>::iterator i = clientIps.begin(); i != clientIps.end(); i++) {
-        string ip = *i;
+    for(map<string, ofxOscSender>::const_iterator i = clients.begin(); i != clients.end(); i++) {
+        // iterator->first = key (string ip)
+        // iterator->second = value (ofxOscSender sender)
+        string ip = i->first;
         cout << ip << endl;
         m.addStringArg(ip);
     }
     
     // then we iterate through the registered clients, sending the heartbeat message to them all.
-    for(map<string, oscClient>::iterator i = clients.begin(); i != clients.end(); i++) {
-        // iterator->first = key
-        // iterator->second = value
-        ofxOscSender & _sender = i->second.sender;
+    for(map<string, ofxOscSender>::iterator i = clients.begin(); i != clients.end(); i++) {
+        // iterator->first = key (string ip)
+        // iterator->second = value (ofxOscSender sender)
+        ofxOscSender & _sender = i->second;
         _sender.sendMessage(m);
     }
 }
