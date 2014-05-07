@@ -59,7 +59,7 @@ void ofApp::sendPulse() {
     // first, we add all of registered client IPs to the message
     ofxOscMessage m;
     m.setAddress("/pulse");
-    for(map<string, ofxOscSender>::const_iterator i = clients.begin(); i != clients.end(); i++) {
+    for(map<string, ofxOscSender>::iterator i = clients.begin(); i != clients.end(); i++) {
         // iterator->first = key (string ip)
         // iterator->second = value (ofxOscSender sender)
         string ip = i->first;
